@@ -57,7 +57,7 @@ exports.index = function(req, res){
   
   function fetchData(option) {
     var d = $.Deferred();
-    rest.getHTML(options, function(statusCode, result) {
+    rest.getHTML(option, function(statusCode, result) {
       //console.log('onResult:(' + statusCode);
       //console.log(result);
       if (statusCode == 200) {
@@ -111,8 +111,19 @@ exports.index = function(req, res){
   }
   
   $.whenall(promises).then(function (tt) {
+    // Filter
+    
+    var obj = {};
+    for (var i = 0; i < dataArr.length; i++) {
+      var jobUrl = dataArr[i]['jobUrl'];
+      if (jobUrl in obj) {
+        dataArr.splice(i, 1);
+      } else {
+        obj[jobUrl] = true;
+      }
+    }
     console.log('dataArr', dataArr);
-      res.render('index', { title: 'Express', data: dataArr });
+      res.render('index', { title: 'Express', data: dataArr, num: dataArr.length });
   }, function (err) {
       //dtd.reject(err);
       console.log("ERROR!");
