@@ -1,5 +1,27 @@
 extends layout
 
+mixin link(href, name)
+      a(class!=attributes.class, href=href)= name
+      
 block content
   h1= title
   p Welcome to #{title}
+
+  
+  div#con
+    table(border='1')
+      tr
+        td 职位名称
+        td 公司名称
+        td 工作地点
+        td 发布日期
+      each item in data
+        tr
+          td
+            +link(item['jobUrl'], item['jobTitle'])
+          td
+            +link(item['companyUrl'], item['company'])
+          td
+            =item['address']
+          td
+            =item['releaseTime']
