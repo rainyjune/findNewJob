@@ -110,20 +110,36 @@ exports.index = function(req, res){
     promises = promises.concat(thisPromise);
   }
   
+  var obj = {};
+  function filterResult(element) {
+    var jobUrl = element['jobUrl'];
+    var jobTitle = element['jobTitle'];
+    var companyName = element['company'];
+    var jobTitleFilterExp = /美工|网页|制作|兼职|ios|android|c#|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
+    var companyFilterExp = /高德软件|慧聪网|敦煌网|教育/i;
+    if ( jobUrl in obj) {
+      //console.log("Double Item:", dataArr[i]);
+      //dataArr.splice(i, 1);
+      return false;
+    } else if (jobTitle.search(jobTitleFilterExp) != -1) {
+      console.log("KEYWORD Item:", element);
+      //dataArr.splice(i, 1);
+      return false;
+    } else if(companyName.search(companyFilterExp) != -1) {
+      return false;
+    }else {
+      obj[jobUrl] = true;
+      return true;
+    }
+  }
+  
   $.whenall(promises).then(function (tt) {
     // Filter
+    console.log('Before filter, dataArr length', dataArr.length);
     
-    var obj = {};
-    for (var i = 0; i < dataArr.length; i++) {
-      var jobUrl = dataArr[i]['jobUrl'];
-      if (jobUrl in obj) {
-        dataArr.splice(i, 1);
-      } else {
-        obj[jobUrl] = true;
-      }
-    }
-    console.log('dataArr', dataArr);
-      res.render('index', { title: 'Express', data: dataArr, num: dataArr.length });
+    var newdataArr = dataArr.filter(filterResult);
+    console.log('after filter, dataArr length', newdataArr.length);
+      res.render('index', { title: 'Express', data: newdataArr, num: newdataArr.length });
   }, function (err) {
       //dtd.reject(err);
       console.log("ERROR!");
