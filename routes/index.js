@@ -116,8 +116,8 @@ exports.index = function(req, res){
     var jobTitle = element['jobTitle'];
     var companyName = element['company'];
     var address = element['address'];
-    var jobTitleFilterExp = /美工|网页|制作|兼职|ios|android|c#|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
-    var companyFilterExp = /高德软件|慧聪网|敦煌网|教育/i;
+    var jobTitleFilterExp = /美工|网页|制作|兼职|ios|android|c#|c\+\+|\.net|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
+    var companyFilterExp = /高德软件|慧聪网|敦煌网|教育|聚美优品|百度/i;
     var addressFilterExp = /石景山区|大兴区/;
     if ( jobUrl in obj) {
       //console.log("Double Item:", dataArr[i]);
