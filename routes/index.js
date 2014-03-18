@@ -3,6 +3,7 @@ var rest = require('../public/javascripts/fetch.js'),
     $ = require('jquery');
     jsdom = require('jsdom'),
     $.whenall = function(arr) { return $.when.apply($, arr); };
+
 exports.index = function(req, res){
   
   var optionsArr = [];
@@ -127,13 +128,9 @@ exports.index = function(req, res){
   
   $.whenall(promises).then(function (tt) {
     // Filter
-    console.log('Before filter, dataArr length', dataArr.length);
-    
     var newdataArr = dataArr.filter(filterResult);
-    console.log('after filter, dataArr length', newdataArr.length);
-      res.render('index', { title: 'Express', data: newdataArr, num: newdataArr.length });
+    res.render('index', { title: 'Express', data: newdataArr, num: newdataArr.length });
   }, function (err) {
-      //dtd.reject(err);
       console.log("ERROR!");
   });
 };
