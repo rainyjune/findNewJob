@@ -117,7 +117,7 @@ exports.index = function(req, res){
     var companyName = element['company'];
     var address = element['address'];
     var jobTitleFilterExp = /美工|网页|制作|兼职|设计师|ios|android|c#|c\+\+|\.net|php|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
-    var companyFilterExp = /高德软件|慧聪网|观其互动|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|敦煌网|教育|聚美优品|百度/i;
+    var companyFilterExp = /高德软件|慧聪网|观其互动|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|万银财富|管理顾问|敦煌网|教育|聚美优品|百度/i;
     var addressFilterExp = /石景山区|大兴区/;
     if ( jobUrl in obj) {
       //console.log("Double Item:", dataArr[i]);
