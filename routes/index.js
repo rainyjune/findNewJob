@@ -58,22 +58,16 @@ exports.index = function(req, res){
   function fetchData(option) {
     var d = $.Deferred();
     rest.getHTML(option, function(statusCode, result) {
-      //console.log('onResult:(' + statusCode);
-      //console.log(result);
       if (statusCode == 200) {
-        //console.log('current search:', $('.currentsearch').text())
         var document = jsdom.jsdom(result);
         var window = document.createWindow();
         var script = document.createElement("script");
         script.src = 'http://code.jquery.com/jquery-1.4.2.js';
         script.onload = function() {
-          //dataArr = dataArr.concat(parseItem(window.jQuery(".search-result-tab")));
           var items = window.jQuery(".search-result-tab");
-          //console.log('length', items.length);
           items.each(function(){
             var obj = {};
             var item = window.jQuery(this);
-            //console.log(item.html());
             
             var jobTitleLink = item.find('.Jobname').find('a');
             obj.jobTitle = jobTitleLink.text().trim();
@@ -101,8 +95,6 @@ exports.index = function(req, res){
     return d.promise();
   }
   
-
-  
   var promises = [];
   
   for (var i = 0, l = optionsArr.length; i < l; i++) {
@@ -120,12 +112,8 @@ exports.index = function(req, res){
     var companyFilterExp = /高德软件|慧聪网|观其互动|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|万银财富|管理顾问|敦煌网|教育|聚美优品|百度/i;
     var addressFilterExp = /石景山区|大兴区/;
     if ( jobUrl in obj) {
-      //console.log("Double Item:", dataArr[i]);
-      //dataArr.splice(i, 1);
       return false;
     } else if (jobTitle.search(jobTitleFilterExp) != -1) {
-      console.log("KEYWORD Item:", element);
-      //dataArr.splice(i, 1);
       return false;
     } else if(companyName.search(companyFilterExp) != -1) {
       return false;
