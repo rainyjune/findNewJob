@@ -95,6 +95,45 @@ exports.index = function(req, res){
       });
       return d.promise();
     }
+
+    function fetchJobData(option) {
+      var d = $.Deferred();
+      rest.getHTML(option, function(statusCode, result) {
+        if (statusCode == 200) {
+          env(result, function(errors, window) {
+            try {
+              console.log("url:", option.host+option.path, ' ERROR:', errors);
+              var $ = require('jquery')(window);
+              var container = $("div.terminalpage-left");
+              var topCon = container.find('div.terminalpage-left-top');
+              var topConTop = topCon.find('.terminalpage-table').eq(0);
+              var topConMain = topCon.find('.terminalpage-table').eq(1);
+              var mainCon = container.find('div.terminalpage-main').eq(0); 
+              var topConTopTDs =  topConTop.find('td');
+              var topConMainTDs =  topConMain.find('td');
+                var obj = {};
+
+                obj.companyType = topConTopTDs.eq(5).text().trim();
+                obj.companyHangye = topConTopTDs.eq(7).text().trim();
+                
+                obj.workDuration = topConMainTDs.eq(1).text().trim(); 
+                obj.education = topConMainTDs.eq(5).text().trim(); 
+                obj.manageExp = topConMainTDs.eq(7).text().trim(); 
+                obj.salary = topConMainTDs.eq(9).text().trim(); 
+                obj.hirecount = topConMainTDs.eq(11).text().trim(); 
+                obj.jobType = topConMainTDs.eq(15).text().trim(); 
+                
+              d.resolve(obj);
+            } catch (err) {
+              d.reject(err);
+            }
+          });
+        } else {
+          d.reject(result);
+        }
+      });
+      return d.promise();
+    }
     
     var promises = [];
     
@@ -109,8 +148,8 @@ exports.index = function(req, res){
       var jobTitle = element['jobTitle'];
       var companyName = element['company'];
       var address = element['address'];
-      var jobTitleFilterExp = /美工|网页|制作|兼职|设计师|ios|android|c#|c\+\+|\.net|php|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
-      var companyFilterExp = /高德软件|慧聪网|观其互动|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|万银财富|管理顾问|敦煌网|教育|聚美优品|百度/i;
+      var jobTitleFilterExp = /美工|网页|制作|兼职|微信|设计师|ios|android|c#|c\+\+|\.net|php|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
+      var companyFilterExp = /高德软件|慧聪网|观其互动|太极计算机|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|万银财富|管理顾问|敦煌网|教育|聚美优品|百度/i;
       var addressFilterExp = /石景山区|大兴区/;
       if ( jobUrl in obj) {
         return false;
@@ -129,7 +168,43 @@ exports.index = function(req, res){
     $.whenall(promises).then(function (tt) {
       // Filter
       var newdataArr = dataArr.filter(filterResult);
-      res.render('index', { title: 'Express', data: newdataArr, num: newdataArr.length });
+      // Next filter
+      var newResult = [];
+      var detailPromises = [];
+      var doneCount = 0;
+      var promiseLen = newdataArr.length; 
+      newdataArr.forEach(function(element, index, array) {
+        var urlArr = element.jobUrl.split('/'),
+        options = {
+            host: urlArr[2],
+            path: '/' + urlArr[3], 
+            port: 80,
+            method: 'GET'
+        };
+        var thisPromise = fetchJobData(options).then(function(data){
+          // filter again 
+          if (data.companyType == '国企') {
+            // do nogthing..
+          } else if (data.hirecount == '若干') {
+             
+          } else if (data.salary != '面议' && data.salary.split(/\-|元\/月/)[1] <= 15000) {
+
+          } else if (data.jobType == '网页设计/制作/美工') {
+
+          } else {
+            newResult = newResult.concat(element); 
+          }
+        }).always(function(){
+          doneCount++; 
+          console.log('Progress:', doneCount/promiseLen * 100 + '%');
+          if (doneCount == promiseLen) {
+            console.log('[DONE!!!]newResult',newResult); 
+            res.render('index', { title: 'Express', data: newResult, num: newResult.length });
+          }
+        });         
+        detailPromises = detailPromises.concat(thisPromise); 
+      });
+      $.whenall(detailPromises);
     }, function (err) {
         console.log("ERROR!");
     });
