@@ -27,7 +27,7 @@ function parseOptions(options) {
 }
 
 exports.getHTML = function(options, callback, errCallback) {
-  var options = parseOptions(options);
+  options = parseOptions(options);
   var protocol = options.protocol == 'http:' ? http : https;
   protocol.get(options.options, function(res) {
     console.log("Got response: " + res.statusCode);
