@@ -9,23 +9,19 @@ exports.index = function(req, res){
   var env = jsdom.env;
   
   var optionsArr = [];
+
   // javascript(职位) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   var options = 'http://sou.zhaopin.com/Jobs/searchresult.ashx?pd=3&jl=北京&kw=javascript&sm=0&p=1&sf=0&kt=3&cs=2%3B3%3B4%3B5%3B6&et=2';
-  
   optionsArr.push(options);
-  
   // phonegap(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=phonegap&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
-  
   // jquery mobile(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=jquery%20mobile&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
-  
   // node.js(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=node.js&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
-  
   // backbone(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=backbone&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
@@ -159,13 +155,9 @@ exports.index = function(req, res){
         var thisPromise = fetchJobData(options).then(function(data){
           // filter again 
           if (data.companyType == '国企') {
-            // do nogthing..
           } else if (data.hirecount == '若干') {
-             
           } else if (data.salary != '面议' && data.salary.split(/\-|元\/月/)[1] <= 15000) {
-
           } else if (data.jobType == '网页设计/制作/美工') {
-
           } else {
             newResult = newResult.concat(element); 
           }
@@ -185,5 +177,4 @@ exports.index = function(req, res){
     });
 
   });
-  
 };
