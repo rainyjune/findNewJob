@@ -19,9 +19,15 @@ exports.index = function(req, res){
   // backbone(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
   keywordEntries.push('http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=backbone&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2');
   
-  env(html, function(errors, window) {
-    var $ = require('jquery')(window);
-    $.whenall = function(arr) { return $.when.apply($, arr); };
+  function domEnv(callback) {
+    env(html, function(errors, window) {
+      var $ = require('jquery')(window);
+      $.whenall = function(arr) { return $.when.apply($, arr); };
+      callback($);
+    });
+  }
+  
+  domEnv(function($) {
     var dataArr = [];
     
     function fetchData(option) {
