@@ -1,26 +1,48 @@
-var http = require('http'),
-    https = require('https');
-    
-exports.getHTML = function(options, onResult) {
-  console.log("fetch::getHTML");
-  var protocol = options.port == 443 ? https: http;
-  var req = protocol.request(options, function(res) {
-    var output = '';
-    console.log(options.host + ':' + res.statusCode);
-    res.setEncoding('utf8');
-    
-    res.on('data', function(chunk) {
-      output += chunk;
+var http = require('http'), https = require('https'), url = require('url');
+
+/**
+ * Parse options 
+ * @param <object||string> options
+ * @return object
+ */
+function parseOptions(options) {
+  var result = {protocol: 'http:', options: {}, encoding: 'utf8'};
+  if (typeof options == "string") {
+    result.options = options;
+    var urlComponent = url.parse(options);
+    result.protocol = urlComponent.protocol; 
+  } else if (typeof options == "object") {
+    result.options = options;
+    if (options.encoding && typeof options.encoding == "string") {
+      result.encoding = options.encoding;  
+    }
+    if (options.url && typeof options.url == "string") {
+      result.options = url.parse(options.url);
+    }
+    if (result.options.protocol) {
+      result.protocol = result.options.protocol;
+    }
+  }
+  return result;
+}
+
+exports.getHTML = function(options, callback, errCallback) {
+  var options = parseOptions(options);
+  var protocol = options.protocol == 'http:' ? http : https;
+  protocol.get(options.options, function(res) {
+    console.log("Got response: " + res.statusCode);
+    res.setEncoding(options.encoding);
+    var chunks = '';
+    res.on('data', function (chunk) {
+      chunks += chunk.toString();
     });
-    
-    res.on('end', function(){
-      onResult(res.statusCode, output);
+    res.on('end', function() {
+      //console.log("Contents:", chunks);
+      callback && callback(res.statusCode, chunks);
     });
+  }).on('error', function(e) {
+    console.log("Got error:" + e.message); 
+    errCallback && errCallback(e);
   });
-  
-  req.on('error', function(err){
-    console.log("error:", err.messaeg);
-  });
-  
-  req.end();
+
 };
