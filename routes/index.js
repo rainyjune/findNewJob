@@ -1,6 +1,6 @@
 /* GET home page. */
 var 
-  rest = require('../public/javascripts/fetch.js'),
+  rest = require('../fetch.js'),
   jsdom = require('jsdom'),
   html = '<html><body><h1>Hello World!</h1><p class="hello">Heya Big World!</body></html>';
 
