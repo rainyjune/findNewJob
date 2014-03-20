@@ -10,49 +10,24 @@ exports.index = function(req, res){
   
   var optionsArr = [];
   // javascript(职位) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  var options = {
-      host: 'sou.zhaopin.com',
-      port: 80,
-      path: '/Jobs/searchresult.ashx?pd=3&jl=北京&kw=javascript&sm=0&p=1&sf=0&kt=3&cs=2%3B3%3B4%3B5%3B6&et=2',
-      method: 'GET'
-  };
+  var options = 'http://sou.zhaopin.com/Jobs/searchresult.ashx?pd=3&jl=北京&kw=javascript&sm=0&p=1&sf=0&kt=3&cs=2%3B3%3B4%3B5%3B6&et=2';
   
   optionsArr.push(options);
   
   // phonegap(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  var options = {
-      host: 'sou.zhaopin.com',
-      port: 80,
-      path: '/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=phonegap&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2',
-      method: 'GET'
-  };
+  var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=phonegap&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
   
   // jquery mobile(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  var options = {
-      host: 'sou.zhaopin.com',
-      port: 80,
-      path: '/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=jquery%20mobile&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2',
-      method: 'GET'
-  };
+  var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=jquery%20mobile&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
   
   // node.js(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  var options = {
-      host: 'sou.zhaopin.com',
-      port: 80,
-      path: '/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=node.js&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2',
-      method: 'GET'
-  };
+  var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=node.js&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
   
   // backbone(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  var options = {
-      host: 'sou.zhaopin.com',
-      port: 80,
-      path: '/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=backbone&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2',
-      method: 'GET'
-  };
+  var options = 'http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=backbone&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2';
   optionsArr.push(options);
   
   env(html, function(errors, window) {
