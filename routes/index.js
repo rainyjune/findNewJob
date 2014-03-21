@@ -40,11 +40,6 @@ exports.index = function(req, res){
     var obj = {};
     
     $.whenall(listPromises);
-    /*
-    .then(testFunc, function (err) {
-        console.log("ERROR!");
-    });
-    */
     
     function testFunc() {
       // Filter
@@ -150,30 +145,6 @@ exports.index = function(req, res){
             } else {
               d.resolve(result);
             }
-            /*
-            var items = $(".search-result-tab");
-            items.each(function(){
-              var obj = {};
-              var item = $(this);
-              
-              var jobTitleLink = item.find('.Jobname').find('a');
-              obj.jobTitle = jobTitleLink.text().trim();
-              obj.jobUrl = jobTitleLink.attr('href');
-              var companyLink = item.find('.Companyname').find('a');
-              obj.company = companyLink.text().trim();
-              obj.companyUrl = companyLink.attr('href');
-              obj.address = item.find('.Companyaddress').text().trim();
-              obj.releaseTime = item.find('.releasetime').text().trim();
-              
-              var subContainer = item.find('.search-result-infotab').find('.tabCol1');
-              obj.companyType = subContainer.find('span').eq(1).text().split('：').pop().trim();
-              obj.companySize = subContainer.find('span').eq(2).text().split('：').pop().trim();
-              obj.jobEducation = subContainer.find('span').eq(3).text().split('：').pop().trim();
-              dataArr.push(obj);
-              
-            });
-            d.resolve(result);
-            */
           });
         } else {
           d.reject(result);
