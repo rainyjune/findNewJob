@@ -22,16 +22,16 @@ exports.index = function(req, res){
   domEnv(function($) {
     var dataArr = [];
     
-    var promises = [];
+    var listPromises = [];
     
     for (var i = 0, l = keywordEntries.length; i < l; i++) {
       var thisPromise = fetchListData(keywordEntries[i]);
-      promises = promises.concat(thisPromise);
+      listPromises = listPromises.concat(thisPromise);
     }
     
     var obj = {};
     
-    $.whenall(promises).then(testFunc, function (err) {
+    $.whenall(listPromises).then(testFunc, function (err) {
         console.log("ERROR!");
     });
     
