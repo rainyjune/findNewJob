@@ -30,6 +30,55 @@ exports.index = function(req, res){
   domEnv(function($) {
     var dataArr = [];
     
+    var promises = [];
+    
+    for (var i = 0, l = keywordEntries.length; i < l; i++) {
+      var thisPromise = fetchData(keywordEntries[i]);
+      promises = promises.concat(thisPromise);
+    }
+    
+    var obj = {};
+    
+    $.whenall(promises).then(function (tt) {
+      // Filter
+      var newdataArr = dataArr.filter(filterResult);
+      // Next filter
+      var newResult = [];
+      var detailPromises = [];
+      var doneCount = 0;
+      var promiseLen = newdataArr.length; 
+      newdataArr.forEach(function(element, index, array) {
+        var urlArr = element.jobUrl.split('/'),
+        options = {
+            host: urlArr[2],
+            path: '/' + urlArr[3], 
+            port: 80,
+            method: 'GET'
+        };
+        var thisPromise = fetchJobData(options).then(function(data){
+          // filter again 
+          if (data.companyType == '国企') {
+          } else if (data.hirecount == '若干') {
+          } else if (data.salary != '面议' && data.salary.split(/\-|元\/月/)[1] <= 15000) {
+          } else if (data.jobType == '网页设计/制作/美工') {
+          } else {
+            newResult = newResult.concat(element); 
+          }
+        }).always(function(){
+          doneCount++; 
+          console.log('Progress:', doneCount/promiseLen * 100 + '%');
+          if (doneCount == promiseLen) {
+            console.log('[DONE!!!]newResult',newResult); 
+            res.render('index', { title: 'Express', data: newResult, num: newResult.length });
+          }
+        });         
+        detailPromises = detailPromises.concat(thisPromise); 
+      });
+      $.whenall(detailPromises);
+    }, function (err) {
+        console.log("ERROR!");
+    });
+    
     function fetchData(option) {
       var d = $.Deferred();
       rest.getHTML(option, function(statusCode, result) {
@@ -105,14 +154,6 @@ exports.index = function(req, res){
       return d.promise();
     }
     
-    var promises = [];
-    
-    for (var i = 0, l = keywordEntries.length; i < l; i++) {
-      var thisPromise = fetchData(keywordEntries[i]);
-      promises = promises.concat(thisPromise);
-    }
-    
-    var obj = {};
     function filterResult(element) {
       var jobUrl = element['jobUrl'];
       var jobTitle = element['jobTitle'];
@@ -134,46 +175,6 @@ exports.index = function(req, res){
         return true;
       }
     }
-    
-    $.whenall(promises).then(function (tt) {
-      // Filter
-      var newdataArr = dataArr.filter(filterResult);
-      // Next filter
-      var newResult = [];
-      var detailPromises = [];
-      var doneCount = 0;
-      var promiseLen = newdataArr.length; 
-      newdataArr.forEach(function(element, index, array) {
-        var urlArr = element.jobUrl.split('/'),
-        options = {
-            host: urlArr[2],
-            path: '/' + urlArr[3], 
-            port: 80,
-            method: 'GET'
-        };
-        var thisPromise = fetchJobData(options).then(function(data){
-          // filter again 
-          if (data.companyType == '国企') {
-          } else if (data.hirecount == '若干') {
-          } else if (data.salary != '面议' && data.salary.split(/\-|元\/月/)[1] <= 15000) {
-          } else if (data.jobType == '网页设计/制作/美工') {
-          } else {
-            newResult = newResult.concat(element); 
-          }
-        }).always(function(){
-          doneCount++; 
-          console.log('Progress:', doneCount/promiseLen * 100 + '%');
-          if (doneCount == promiseLen) {
-            console.log('[DONE!!!]newResult',newResult); 
-            res.render('index', { title: 'Express', data: newResult, num: newResult.length });
-          }
-        });         
-        detailPromises = detailPromises.concat(thisPromise); 
-      });
-      $.whenall(detailPromises);
-    }, function (err) {
-        console.log("ERROR!");
-    });
 
   });
 };
