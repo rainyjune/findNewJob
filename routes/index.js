@@ -24,16 +24,27 @@ exports.index = function(req, res){
     
     var listPromises = [];
     
+    var kwEntriesDone = 0;
+    
     for (var i = 0, l = keywordEntries.length; i < l; i++) {
-      var thisPromise = fetchListData(keywordEntries[i]);
+      var thisPromise = fetchListData(keywordEntries[i]).always(function(){
+        kwEntriesDone++;
+        //console.log('dataarr leng', dataArr.length);
+        if (kwEntriesDone == keywordEntries.length) {
+          testFunc();
+        }
+      });
       listPromises = listPromises.concat(thisPromise);
     }
     
     var obj = {};
     
-    $.whenall(listPromises).then(testFunc, function (err) {
+    $.whenall(listPromises);
+    /*
+    .then(testFunc, function (err) {
         console.log("ERROR!");
     });
+    */
     
     function testFunc() {
       // Filter
@@ -61,7 +72,8 @@ exports.index = function(req, res){
             newResult = newResult.concat(element); 
           }
         }).always(function(){
-          doneCount++; 
+          doneCount++;
+          console.log(doneCount + '/' + promiseLen);
           console.log('Progress:', doneCount/promiseLen * 100 + '%');
           if (doneCount == promiseLen) {
             console.log('[DONE!!!]newResult',newResult); 
@@ -73,12 +85,13 @@ exports.index = function(req, res){
       $.whenall(detailPromises);
     }
     
-    function fetchListData(option) {
+    function fetchPageData(option) {
       var d = $.Deferred();
       rest.getHTML(option, function(statusCode, result) {
         if (statusCode == 200) {
           env(result, function(errors, window) {
             var $ = require('jquery')(window);
+            //$.whenall = function(arr) { return $.when.apply($, arr); };
             var items = $(".search-result-tab");
             items.each(function(){
               var obj = {};
@@ -101,6 +114,66 @@ exports.index = function(req, res){
               
             });
             d.resolve(result);
+          });
+        } else {
+          d.reject(result);
+        }
+      });
+      return d.promise();
+    }
+    
+    function fetchListData(option) {
+      var d = $.Deferred();
+      rest.getHTML(option, function(statusCode, result) {
+        if (statusCode == 200) {
+          env(result, function(errors, window) {
+            var $ = require('jquery')(window);
+            $.whenall = function(arr) { return $.when.apply($, arr); };
+            var pageLinks = $('div.pagesDown a[href]').filter(function(){return !isNaN($(this).text());});
+            if (pageLinks.length) {
+              var pagePromises = [];
+              var pageDoneCount = 0;
+              pageLinks.each(function(){
+                var listURL = $(this).attr('href');
+                if (listURL == '#') {
+                  listURL = option;
+                }
+                var pagePromise = fetchPageData(listURL).always(function(){
+                  pageDoneCount++
+                  if (pageDoneCount == pagePromises.length) {
+                    d.resolve(result);
+                  }
+                });
+                pagePromises = pagePromises.concat(pagePromise);
+              });
+              $.whenall(pagePromises);
+            } else {
+              d.resolve(result);
+            }
+            /*
+            var items = $(".search-result-tab");
+            items.each(function(){
+              var obj = {};
+              var item = $(this);
+              
+              var jobTitleLink = item.find('.Jobname').find('a');
+              obj.jobTitle = jobTitleLink.text().trim();
+              obj.jobUrl = jobTitleLink.attr('href');
+              var companyLink = item.find('.Companyname').find('a');
+              obj.company = companyLink.text().trim();
+              obj.companyUrl = companyLink.attr('href');
+              obj.address = item.find('.Companyaddress').text().trim();
+              obj.releaseTime = item.find('.releasetime').text().trim();
+              
+              var subContainer = item.find('.search-result-infotab').find('.tabCol1');
+              obj.companyType = subContainer.find('span').eq(1).text().split('：').pop().trim();
+              obj.companySize = subContainer.find('span').eq(2).text().split('：').pop().trim();
+              obj.jobEducation = subContainer.find('span').eq(3).text().split('：').pop().trim();
+              dataArr.push(obj);
+              
+            });
+            d.resolve(result);
+            */
           });
         } else {
           d.reject(result);
