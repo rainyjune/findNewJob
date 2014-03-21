@@ -25,7 +25,7 @@ exports.index = function(req, res){
     var promises = [];
     
     for (var i = 0, l = keywordEntries.length; i < l; i++) {
-      var thisPromise = fetchData(keywordEntries[i]);
+      var thisPromise = fetchListData(keywordEntries[i]);
       promises = promises.concat(thisPromise);
     }
     
@@ -71,7 +71,7 @@ exports.index = function(req, res){
         console.log("ERROR!");
     });
     
-    function fetchData(option) {
+    function fetchListData(option) {
       var d = $.Deferred();
       rest.getHTML(option, function(statusCode, result) {
         if (statusCode == 200) {
