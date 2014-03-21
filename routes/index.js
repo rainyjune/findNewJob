@@ -31,7 +31,11 @@ exports.index = function(req, res){
     
     var obj = {};
     
-    $.whenall(promises).then(function (tt) {
+    $.whenall(promises).then(testFunc, function (err) {
+        console.log("ERROR!");
+    });
+    
+    function testFunc() {
       // Filter
       var newdataArr = dataArr.filter(filterResult);
       // Next filter
@@ -67,9 +71,7 @@ exports.index = function(req, res){
         detailPromises = detailPromises.concat(thisPromise); 
       });
       $.whenall(detailPromises);
-    }, function (err) {
-        console.log("ERROR!");
-    });
+    }
     
     function fetchListData(option) {
       var d = $.Deferred();
