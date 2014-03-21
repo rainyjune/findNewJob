@@ -2,22 +2,22 @@
 var 
   rest = require('../fetch.js'),
   jsdom = require('jsdom'),
+  fs = require('fs');
   html = '<html><body><h1>Hello World!</h1><p class="hello">Heya Big World!</body></html>';
 
 exports.index = function(req, res){
   var env = jsdom.env;
   var keywordEntries = [];
+  var jobTitleFilterString = fs.readFileSync('./jobTitleBad.txt', {encoding:'utf8'});
+  var jobTitleFilterExp = new RegExp(jobTitleFilterString.split(/\n/).join('|'), "i");
+  var companyFilterString = fs.readFileSync('./companyBadNames.txt', {encoding:'utf8'});
+  var companyFilterExp = new RegExp(companyFilterString.split(/\n/).join('|'), "i");
+  var addressFilterExp = /石景山区|大兴区/;
 
-  // javascript(职位) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  keywordEntries.push('http://sou.zhaopin.com/Jobs/searchresult.ashx?pd=3&jl=北京&kw=javascript&sm=0&p=1&sf=0&kt=3&cs=2%3B3%3B4%3B5%3B6&et=2');
-  // phonegap(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  keywordEntries.push('http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=phonegap&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2');
-  // jquery mobile(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  keywordEntries.push('http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=jquery%20mobile&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2');
-  // node.js(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  keywordEntries.push('http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=node.js&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2');
-  // backbone(全文) + 北京 + 最近三天 + 全职,忽略少于20人的用人单位
-  keywordEntries.push('http://sou.zhaopin.com/Jobs/SearchResult.ashx?pd=3&jl=北京&kw=backbone&sm=0&p=1&sf=0&cs=2%3B3%3B4%3B5%3B6&et=2');
+  var entriesString = fs.readFileSync('./entryUrls.txt', {encoding:'utf8'}).trim();
+  
+  keywordEntries = entriesString.split(/\n/);
+  console.log('entriesString length', keywordEntries.length);
   
   domEnv(function($) {
     var dataArr = [];
@@ -197,9 +197,6 @@ exports.index = function(req, res){
       var jobTitle = element['jobTitle'];
       var companyName = element['company'];
       var address = element['address'];
-      var jobTitleFilterExp = /美工|网页|制作|兼职|微信|设计师|ios|android|c#|c\+\+|\.net|php|java(?!script)|开发人员|外派|毕业生|中级|初级|高薪|经验|附近|程序员/i;
-      var companyFilterExp = /高德软件|慧聪网|观其互动|太极计算机|华清中科|锤子科技|能力天空|汽车之家|智联招聘|经典时空|竞技世界|通金易汇|经纬盈科|萃英信息技术|国信灵通|网秦天下|普华和诚|顺丰电子商务|去哪儿|合众传播|卓信创佳|中软国际|浪潮方智|微博易|创业未来传媒|宝宝树|软通动力|宜信公司|凤凰网|猎聘网|万银财富|管理顾问|敦煌网|教育|聚美优品|百度/i;
-      var addressFilterExp = /石景山区|大兴区/;
       if ( jobUrl in obj) {
         return false;
       } else if (jobTitle.search(jobTitleFilterExp) != -1) {
